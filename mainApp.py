@@ -2,17 +2,13 @@ from flask import Flask, render_template,request,redirect,url_for
 import os
 import requests
 import matplotlib.pyplot as plt
+from matplotlib import use 
+use('Agg')
 from flask import Flask
 from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with, marshal
 from flask_sqlalchemy import SQLAlchemy
+
 import datetime
-'''def create_app():
-    current_dir = os.path.abspath(os.path.dirname(__file__))
-    app = Flask(__name__, template_folder='templates')
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.path.join(current_dir, 'database.sqlite3')
-    db.init_app(app)
-    app.app_context().push()
-    return app'''
 app = Flask(__name__)
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db3.db'
@@ -346,11 +342,10 @@ def viewT(user_id, user_name, tracker_id, tracker_name):
         ts= ts.split(' ')
         tracker_log.append(ts[0])
         tracker_values.append(i['tracker_value'])
-    filePath='./static/hist.png'
-    if os.path.exists(filePath):
-        os.remove(filePath)
+    plt.clf()
     plt.scatter(tracker_log, tracker_values)
     plt.savefig('./static/hist.png')
+    
     return render_template('view-tracker.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name, logListJson= logListJson,tracker_type= s)
 
 #ADD A LOG, ROUTE
