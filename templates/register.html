@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{url_for('static',filename='login.css')}}" />
+    <title>Register</title>
+  </head>
+  <body>
+    <div class="container1">
+      <h1>Register</h1>
+      <form action= '/register' method= 'POST'>
+        <div class="form-control">
+          <input type="text" name= "u_name" autocomplete="off" required />
+          <label>Username</label>
+        </div>
+        <div class="form-control">
+          <input type="name" name= "f_name" autocomplete="off" required />
+          <label>First Name</label>
+        </div>
+        <div class="form-control">
+          <input type="text" name= "l_name" autocomplete="off"/>
+          <label>Last Name</label>
+        </div>
+        <div class="form-control">
+          <input type="password" name= "pswd" required />
+          <label>Password</label>
+        </div>
+
+        <button class="btn" type="submit">Register</button>
+      </form>
+    </div>
+    <script src="{{url_for('static',filename='login.js')}}"></script>
+  </body>
+</html>
