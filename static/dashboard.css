@@ -34,8 +34,10 @@ background-image: url("https://www.transparenttextures.com/patterns/ag-square.pn
 .tracker-table {
   width: 100%;
   border-collapse: collapse;
+  font-family:'Courier New', Courier, monospace ;
   border-spacing: 0;
   margin-top: 50px;
+  font-size: 18px;
 }
 .add-button {
   margin-top: 20px;
@@ -43,4 +45,7 @@ background-image: url("https://www.transparenttextures.com/patterns/ag-square.pn
 .tracker-add {
   font-family: "Muli", sans-serif;
   margin-top: 20px;
+}
+.form-group{
+  margin-top: 25px;
 }
