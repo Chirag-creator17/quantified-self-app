@@ -36,7 +36,6 @@ class Tracker(db.Model):
     description=db.Column(db.String(100),nullable=False)
     settings= db.Column(db.String(100))
     user_id=db.Column(db.Integer, db.ForeignKey('user.user_id'))
-
     def __repr__(self):
         return "<Tracker %r" %self.tracker_id
 
@@ -61,15 +60,6 @@ class Tracker_boolean(db.Model):
     tracker_timestamp=db.Column(db.DateTime,default=datetime.datetime.utcnow())
     tracker_value=db.Column(db.Boolean,nullable=False)
     tracker_note=db.Column(db.String(100))
-
-'''class Tracker_time_duration(db.Model):
-    tracker_id=db.Column(db.Integer,db.ForeignKey('tracker.tracker_id'), nullable=False, primary_key=True)
-    #user_id=db.Column(db.Integer,db.ForeignKey('user.user_id'), nullable=False, primary_key=True)
-    tracker_timestamp=db.Column(db.DateTime,default=datetime.datetime.utcnow(), primary_key=True)
-    tracker_value=db.Column(db.Integer,nullable=False)
-    tracker_note=db.Column(db.String(100))
-'''
-#db.create_all()
 
 
 
@@ -113,14 +103,6 @@ tracker_json = {
     'settings': fields.String,
     'user_id': fields.Integer
 }
-'''tracker_update_json = {
-    'tracker_id': fields.Integer,
-    'tracker_type': fields.String,
-    'tracker_name': fields.String,
-    'description': fields.String,
-    'settings': fields.String,
-    'user_id': fields.Integer
-}'''
 tracker_boolean_json= {
     'log_id': fields.Integer,
     'tracker_id': fields.Integer,
@@ -135,7 +117,6 @@ tracker_numerical_json= {
     'tracker_value': fields.Integer,
     'tracker_note': fields.String,
 }
-
 tracker_multichoice_json= {
     'log_id': fields.Integer,
     'tracker_id': fields.Integer,
@@ -155,13 +136,11 @@ class Trackers(Resource):
         allT= Tracker.query.filter_by(user_id=user_id).all()
         return allT
 #API: TRACKER: CREATE
-    #@marshal_with(resource_fields)
     def post(self, user_id):
         args = trackers_post_args.parse_args()
         newT = Tracker(user_id= user_id, tracker_name=args['tracker_name'], tracker_type=args['tracker_type'], description=args['description'])
         db.session.add(newT)
         db.session.commit()
-        return {0:'good'}
 
 api.add_resource(Trackers, "/<int:user_id>/trackers")
 
@@ -215,7 +194,6 @@ class log_manipulate(Resource):
         args = logType[logClass].parse_args()
         logUpdate=logClass.query.filter_by(tracker_id=tracker_id, log_id=log_id).update(dict(tracker_value=args['tracker_value'], tracker_note=args['tracker_note']))
         db.session.commit()
-
         return 'tracker_log updated'
 
 #API: LOGS: DELETE
@@ -362,7 +340,6 @@ def addLog(user_id, user_name, tracker_id, tracker_name):
 #UPDATE A LOG, ROUTE
 @app.route('/<int:user_id>/<user_name>/<int:tracker_id>/<tracker_name>/<int:log_id>/update_log' , methods= ["GET","POST"])
 def updateLog(user_id, user_name, tracker_id, log_id, tracker_name):
-    #return 'hi'
     if request.method == 'POST':
        val, nts= request.form['value'], request.form['notes']
        requests.put(f'{BASE}{user_id}/{tracker_id}/tracker_log/{log_id}', {'tracker_value':val, 'tracker_note':nts})
@@ -382,14 +359,6 @@ def updateLog(user_id, user_name, tracker_id, log_id, tracker_name):
 def deleteLog(user_id, user_name, tracker_id, log_id, tracker_name ):
     requests.delete(BASE + str(user_id)+"/" + str(tracker_id)+ "/tracker_log/"+ str(log_id))
     return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
-
-'''@app.route('/user/add_tracker', methods= ["GET"])
-def AduserdTrack():
-    return render_template('add_tracker.html')
-
-
-v=Tracker.query.all()
-print(v)'''
 
 if __name__ == '__main__':
     app.run( debug=True)
