@@ -323,7 +323,6 @@ def viewT(user_id, user_name, tracker_id, tracker_name):
     plt.clf()
     plt.scatter(tracker_log, tracker_values)
     plt.savefig('./static/hist.png')
-    
     return render_template('view-tracker.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name, logListJson= logListJson,tracker_type= s)
 
 #ADD A LOG, ROUTE
@@ -332,6 +331,8 @@ def addLog(user_id, user_name, tracker_id, tracker_name):
     #response = requests.post(BASE + user_id+"/" +tracker_id +"/tracker_logs", {'tracker_value':True, 'tracker_note':'new log'})
     if request.method == 'POST':
        val, nts= request.form['value'], request.form['notes']
+       square_val=int(val)*int(val)
+       val=square_val
        requests.post(BASE + str(user_id) +"/" +str(tracker_id)+ "/tracker_logs", {'tracker_value':val, 'tracker_note':nts})
        return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
     elif request.method == 'GET':
@@ -342,6 +343,8 @@ def addLog(user_id, user_name, tracker_id, tracker_name):
 def updateLog(user_id, user_name, tracker_id, log_id, tracker_name):
     if request.method == 'POST':
        val, nts= request.form['value'], request.form['notes']
+       square_val=int(val)*int(val)
+       val=square_val
        requests.put(f'{BASE}{user_id}/{tracker_id}/tracker_log/{log_id}', {'tracker_value':val, 'tracker_note':nts})
        return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
     elif request.method == 'GET':
