@@ -30,6 +30,9 @@
         <button class="btn" type="submit">Register</button>
       </form>
     </div>
+    {% if error | length > 0 %}
+    <script>alert("{{error}}");</script>
+    {% endif %}
     <script src="{{url_for('static',filename='login.js')}}"></script>
   </body>
 </html>

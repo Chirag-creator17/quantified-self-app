@@ -28,18 +28,40 @@ def index():
                 uid= userInfo[0].user_id
                 return redirect(f'/{uid}/{un}/dashboard')
         return render_template('login.html', error= "Wrong password")
-
+def validate(password):
+    if(len(password)<=8):
+        return "Password must be atleast 8 characters long"
+    count ,num,up=0,0,0
+    special_charaters=['[','@','_','!','#','$','%','^','&','*','(',')','<','>','?','/','|','}','{','~',':',']']
+    nums=['1','2','3','4','5','6','7','8','9','0']
+    char=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+    for i in password:
+        if(i in special_charaters):
+            count+=1
+        if(i in nums):
+            num+=1
+        if(i in char):
+            up+=1
+    if(count==0):
+        return "Password must contain atleast one special character"
+    if(num==0):
+        return "Password must contain atleast one number"
+    if(up==0):
+        return "Password must contain atleast one uppercase letter"
+    return "valid"
 #ROUTE: REGISTER
 @app.route('/register', methods= ["GET", "POST"] )
 def register():
     if request.method == "POST":
         un, fn= request.form['u_name'], request.form['f_name']
         ln, pw= request.form['l_name'], request.form['pswd']
-        pw_hash= bcrypt.generate_password_hash(pw).decode('utf-8')
-        addUser= User(user_name=un, first_name=fn, last_name=ln, password=pw_hash)
-        db.session.add(addUser)
-        db.session.commit()
-        return redirect('/login')
+        if(validate(pw)=="valid"):
+            pw_hash= bcrypt.generate_password_hash(pw).decode('utf-8')
+            addUser= User(user_name=un, first_name=fn, last_name=ln, password=pw_hash)
+            db.session.add(addUser)
+            db.session.commit()
+            return redirect('/login')
+        return render_template('register.html', error= validate(pw))
     if request.method == "GET":
        return render_template('register.html')
 
