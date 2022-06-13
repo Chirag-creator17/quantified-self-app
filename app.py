@@ -37,7 +37,7 @@ def validate(password):
     for i in password:
         if(i in special_charaters):
             count+=1
-        if(i.isdigiit()):
+        if(i.isdigit()):
             num+=1
         if(i.isupper()):
             up+=1
@@ -166,14 +166,7 @@ def addLog(user_id, user_name, tracker_id, tracker_name):
             tracker_type= i['tracker_type']
     if request.method == 'POST':
         val, nts= request.form['value'], request.form['notes']
-        
-        if(val=="True"):
-            requests.post(BASE + str(user_id) +"/" +str(tracker_id)+ "/tracker_logs", {'tracker_value':json.dumps(True), 'tracker_note':nts})
-        elif(val=="False"):
-            requests.post(BASE + str(user_id) +"/" +str(tracker_id)+ "/tracker_logs",{'tracker_value':json.dumps(False), 'tracker_note':nts})
-        else:
-            requests.post(BASE + str(user_id) +"/" +str(tracker_id)+ "/tracker_logs", {'tracker_value':val, 'tracker_note':nts})
-        
+        requests.post(BASE + str(user_id) +"/" +str(tracker_id)+ "/tracker_logs", {'tracker_value':val, 'tracker_note':nts})
         return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
     elif request.method == 'GET':
         return render_template('add-logs.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name,tracker_type=tracker_type)
@@ -202,5 +195,6 @@ def deleteLog(user_id, user_name, tracker_id, log_id, tracker_name ):
     return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
 
 if __name__ == '__main__':
+    db.create_all()
     app.run( debug=True)
 

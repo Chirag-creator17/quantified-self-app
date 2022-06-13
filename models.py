@@ -4,7 +4,7 @@ import datetime
 import pytz
 app=Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fdb.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///fdb1.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy()
 db.init_app(app)
@@ -50,7 +50,7 @@ class Tracker_boolean(db.Model):
     log_id=db.Column(db.Integer, primary_key=True, autoincrement=True)
     tracker_id=db.Column(db.Integer,db.ForeignKey('tracker.tracker_id'), nullable=False)
     tracker_timestamp=db.Column(db.DateTime,default=tz.localize(datetime.datetime.now()))
-    tracker_value=db.Column(db.Boolean,nullable=False)
+    tracker_value=db.Column(db.String(10),nullable=False)
     tracker_note=db.Column(db.String(100))
 
 

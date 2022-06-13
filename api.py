@@ -23,7 +23,7 @@ trackers_update_args.add_argument("settings", type=str)
 
 # LOGS, BOOLEAN: POST, PUT: ARGS
 bool_args = reqparse.RequestParser()
-bool_args.add_argument("tracker_value", type=bool,
+bool_args.add_argument("tracker_value", type=str,
                        help="value of the tracker log is required", required=True)
 bool_args.add_argument("tracker_note", type=str,
                        help="note for the tracker log is required", required=True)
@@ -57,7 +57,7 @@ tracker_boolean_json = {
     'log_id': fields.Integer,
     'tracker_id': fields.Integer,
     'tracker_timestamp': fields.String,
-    'tracker_value': fields.Boolean,
+    'tracker_value': fields.String,
     'tracker_note': fields.String,
 }
 tracker_numerical_json = {
@@ -74,9 +74,8 @@ tracker_multichoice_json = {
     'tracker_value': fields.String,
     'tracker_note': fields.String,
 }
-
-
 # API: TRACKERS: CRUD
+
 
 class Trackers(Resource):
     # API: TRACKER: READ
@@ -130,13 +129,15 @@ logType = {Tracker_Numerical: numerical_args,
 
 class Tracker_logs(Resource):
     def get(self, user_id, tracker_id):
-        tType = Tracker.query.filter_by(tracker_id=tracker_id).first().tracker_type
+        tType = Tracker.query.filter_by(
+            tracker_id=tracker_id).first().tracker_type
         logClass = type_dict[tType]
         tLogs = logClass.query.filter_by(tracker_id=tracker_id).all()
         return marshal(tLogs, logs_json_dict[tType])
-
     def post(self, user_id, tracker_id):
-        tType = Tracker.query.filter_by(tracker_id=tracker_id).first().tracker_type
+        tType = Tracker.query.filter_by(
+            tracker_id=tracker_id).first().tracker_type
+        
         logClass = type_dict[tType]
         args = logType[logClass].parse_args()
         print(args)
