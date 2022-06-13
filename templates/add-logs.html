@@ -39,6 +39,17 @@
               aria-describedby="emailHelp"
             />
           </div>
+          {% if tracker_type=="boolean" %}
+          <div class="form-group">
+            <label for="exampleInputEmail1">Value</label>
+            <br>
+              <select class="form-select form-select-lg mb-3" aria-label="Default select example" name="value">
+                <option selected>Select Option</option>
+                <option value="True">True</option>
+                <option value="False">False</option>
+              </select>
+          </div>
+          {% else %}
           <div class="form-group">
             <label for="exampleInputEmail1">Value</label>
             <input
@@ -48,8 +59,9 @@
               id="exampleInputEmail1"
               aria-describedby="emailHelp"
               required
-
+              />
           </div>
+          {% endif %}
           <div class="form-group">
             <label for="exampleInputEmail1">Notes</label>
             <input

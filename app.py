@@ -1,4 +1,4 @@
-from flask import render_template,request,redirect
+from flask import render_template,request,redirect,jsonify,json
 import requests
 from flask_bcrypt import Bcrypt
 import matplotlib.pyplot as plt
@@ -28,19 +28,18 @@ def index():
                 uid= userInfo[0].user_id
                 return redirect(f'/{uid}/{un}/dashboard')
         return render_template('login.html', error= "Wrong password")
+    
 def validate(password):
     if(len(password)<=8):
         return "Password must be atleast 8 characters long"
     count ,num,up=0,0,0
-    special_charaters=['[','@','_','!','#','$','%','^','&','*','(',')','<','>','?','/','|','}','{','~',':',']']
-    nums=['1','2','3','4','5','6','7','8','9','0']
-    char=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+    special_charaters=['[','@','_','!','#','$','%','^','&','*','(',')','<','>','?','/','|','}','{','~',':',']','+','-',',']
     for i in password:
         if(i in special_charaters):
             count+=1
-        if(i in nums):
+        if(i.isdigiit()):
             num+=1
-        if(i in char):
+        if(i.isupper()):
             up+=1
     if(count==0):
         return "Password must contain atleast one special character"
@@ -49,6 +48,7 @@ def validate(password):
     if(up==0):
         return "Password must contain atleast one uppercase letter"
     return "valid"
+
 #ROUTE: REGISTER
 @app.route('/register', methods= ["GET", "POST"] )
 def register():
@@ -158,12 +158,25 @@ def viewT(user_id, user_name, tracker_id, tracker_name):
 @app.route('/<int:user_id>/<user_name>/<int:tracker_id>/<tracker_name>/add_log', methods= ["GET","POST"])
 def addLog(user_id, user_name, tracker_id, tracker_name):
     #response = requests.post(BASE + user_id+"/" +tracker_id +"/tracker_logs", {'tracker_value':True, 'tracker_note':'new log'})
+    test=requests.get(f"{BASE}/{str(user_id)}/trackers")
+    test_json=test.json()
+    tracker_type=''
+    for i in test_json:
+        if(i['tracker_id']==tracker_id):
+            tracker_type= i['tracker_type']
     if request.method == 'POST':
-       val, nts= request.form['value'], request.form['notes']
-       requests.post(BASE + str(user_id) +"/" +str(tracker_id)+ "/tracker_logs", {'tracker_value':val, 'tracker_note':nts})
-       return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
+        val, nts= request.form['value'], request.form['notes']
+        
+        if(val=="True"):
+            requests.post(BASE + str(user_id) +"/" +str(tracker_id)+ "/tracker_logs", {'tracker_value':json.dumps(True), 'tracker_note':nts})
+        elif(val=="False"):
+            requests.post(BASE + str(user_id) +"/" +str(tracker_id)+ "/tracker_logs",{'tracker_value':json.dumps(False), 'tracker_note':nts})
+        else:
+            requests.post(BASE + str(user_id) +"/" +str(tracker_id)+ "/tracker_logs", {'tracker_value':val, 'tracker_note':nts})
+        
+        return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
     elif request.method == 'GET':
-       return render_template('add-logs.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name)
+        return render_template('add-logs.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name,tracker_type=tracker_type)
 
 #UPDATE A LOG, ROUTE
 @app.route('/<int:user_id>/<user_name>/<int:tracker_id>/<tracker_name>/<int:log_id>/update_log' , methods= ["GET","POST"])

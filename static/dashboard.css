@@ -1,17 +1,17 @@
 @import url("https://fonts.googleapis.com/css?family=Muli&display=swap");
 .header {
-  background-color: #1daaf5;
+  background-color: #000000;
   /* background-color: rgb(105, 188, 216); */
   margin: auto -16px;
   padding: 16px 32px;
   /* box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3); */
 }
 body{
-  background: white;
+  background: rgb(22, 40, 53);
 background-image: url("https://www.transparenttextures.com/patterns/ag-square.png");
 }
 .link {
-  color: black;
+  color:#fff;
 }
 .header h1 {
   color: #fff;
@@ -31,7 +31,23 @@ background-image: url("https://www.transparenttextures.com/patterns/ag-square.pn
   border: none;
   outline: none;
 }
+.table{
+  color: #fff;
+}
+label{
+  color: #fff;
+}
+.btn{
+  color: #fff;
+}
+.btn:hover{
+  color: #fff;
+}
+h1{
+  color: #fff;
+}
 .tracker-table {
+  
   width: 100%;
   border-collapse: collapse;
   font-family:'Courier New', Courier, monospace ;

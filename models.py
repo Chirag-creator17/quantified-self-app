@@ -9,6 +9,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy()
 db.init_app(app)
 app.app_context().push()
+
 class User(db.Model):
     __tablename__ = 'user'
     user_id=db.Column(db.Integer,primary_key=True, autoincrement=True)
