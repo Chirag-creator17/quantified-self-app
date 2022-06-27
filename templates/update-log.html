@@ -40,6 +40,22 @@
                 readonly
               />
             </div>
+          {% if tracker_type=="boolean" %}
+          <div class="form-group">
+            <label for="exampleInputEmail1">Value</label>
+            <br>
+              <select class="form-select form-select-lg mb-3" aria-label="Default select example" name="value">
+                <option>Select Option</option>
+                {% if lv=="True" %}
+                <option value="True" selected>True</option>
+                <option value="False">False</option>
+                {% else %}
+                <option value="True">True</option>
+                <option value="False" selected>False</option>
+                {% endif %}
+              </select>
+          </div>
+          {% else %}
             <div class="form-group">
               <label for="exampleInputEmail1">Value</label>
               <input
@@ -51,6 +67,7 @@
                 value="{{lv}}"
               />
             </div>
+          {% endif %}
             <div class="form-group">
               <label for="exampleInputEmail1">Notes</label>
               <input

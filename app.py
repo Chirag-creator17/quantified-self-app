@@ -146,12 +146,23 @@ def viewT(user_id, user_name, tracker_id, tracker_name):
         tracker_log.append(ts[0])
         tracker_values.append(i['tracker_value'])
     plt.clf()
-    plt.scatter(tracker_log, tracker_values)
+    if(s=="boolean"):
+        t,f=0,0
+        for i in tracker_values:
+            if(i=="True"):
+                t+=1
+            else:
+                f+=1
+        plt.pie([t,f],labels=["True","False"], shadow=True, startangle=90)
+    else:
+        plt.scatter(tracker_log, tracker_values)
     plt.savefig('./static/hist.png')
+    print(s,tracker_log,tracker_values)
     for i in range(len(logListJson)):
         time_change= logListJson[i]['tracker_timestamp']
         l=time_change.split('.')
         logListJson[i]['tracker_timestamp']= l[0]
+    tracker_name=tracker_name.capitalize()
     return render_template('view-tracker.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name, logListJson= logListJson,tracker_type= s)
 
 #ADD A LOG, ROUTE
@@ -164,12 +175,15 @@ def addLog(user_id, user_name, tracker_id, tracker_name):
     for i in test_json:
         if(i['tracker_id']==tracker_id):
             tracker_type= i['tracker_type']
+    tz = pytz.timezone('Asia/Kolkata')
+    tracker_time=tz.localize(datetime.datetime.now())
+    tr=tracker_time.strftime("%H:%M:%S")
     if request.method == 'POST':
         val, nts= request.form['value'], request.form['notes']
         requests.post(BASE + str(user_id) +"/" +str(tracker_id)+ "/tracker_logs", {'tracker_value':val, 'tracker_note':nts})
         return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
     elif request.method == 'GET':
-        return render_template('add-logs.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name,tracker_type=tracker_type)
+        return render_template('add-logs.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name,tracker_type=tracker_type,tracker_time=tr)
 
 #UPDATE A LOG, ROUTE
 @app.route('/<int:user_id>/<user_name>/<int:tracker_id>/<tracker_name>/<int:log_id>/update_log' , methods= ["GET","POST"])
@@ -186,7 +200,13 @@ def updateLog(user_id, user_name, tracker_id, log_id, tracker_name):
                lv= r['tracker_value']
                ln= r['tracker_note']
                ltime= r['tracker_timestamp']
-        return render_template('update-log.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name, log_id=log_id, lv=lv, ln=ln, ltime=ltime)
+        test=requests.get(f"{BASE}/{str(user_id)}/trackers")
+        test_json=test.json()
+        tracker_type=''
+        for i in test_json:
+            if(i['tracker_id']==tracker_id):
+                tracker_type= i['tracker_type']
+        return render_template('update-log.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name, log_id=log_id, lv=lv, ln=ln, ltime=ltime, tracker_type=tracker_type)
 
 #DELETE A LOG, ROUTE
 @app.route('/<int:user_id>/<user_name>/<int:tracker_id>/<tracker_name>/<int:log_id>/delete_log', methods= ["GET","POST"])
@@ -195,6 +215,5 @@ def deleteLog(user_id, user_name, tracker_id, log_id, tracker_name ):
     return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
 
 if __name__ == '__main__':
-    db.create_all()
     app.run( debug=True)
 

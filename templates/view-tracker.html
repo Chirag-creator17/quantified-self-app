@@ -24,14 +24,12 @@
         </div>
       </nav>
     </section>
-    {% if tracker_type=='numerical' %}
     <section class="tracker-body">
         <div class="container tracker-add">
             <h1>{{tracker_name}} tracker</h1>
             <img src="{{url_for('static',filename='hist.png')}}" alt="graph">
         </div>
     </section>
-    {% endif %}
     <section class="log-table">
         <div class="container tracker-table">
             <h1>Logs</h1>
