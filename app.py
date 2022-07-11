@@ -10,117 +10,155 @@ from api import *
 bcrypt = Bcrypt(app)
 BASE = "http://127.0.0.1:5000/"
 
+#ROUTE: LANDING PAGE
 @app.route('/')
-def land():
+def landing_page():
     return render_template('landing.html')
 
+#ROUTE: LOGIN
 @app.route('/login', methods= ["GET", "POST"])
 def index():
     if request.method == "GET":
         return render_template('login.html')
+    
     if request.method == "POST":
-        un, pw= request.form['u_name'], request.form['pswd']
-        userInfo= User.query.filter_by(user_name= un).all()
-        if(len(userInfo)==0):
+        
+        #Getting username and password form form 
+        user_name=request.form['u_name']
+        user_password=request.form['pswd']
+        
+        #Checking if user exists
+        user_info= User.query.filter_by(user_name= user_name).all()
+        
+        #Checking if user does not exist if not redirect to signup page
+        if(len(user_info)==0):
             return render_template('login.html', error= "No user found")
-        for i in userInfo:
-            if(bcrypt.check_password_hash(i.password, pw)):
-                uid= userInfo[0].user_id
-                return redirect(f'/{uid}/{un}/dashboard')
+        
+        #Checking if password is correct
+        for i in user_info:
+            if(bcrypt.check_password_hash(i.password, user_password)):     #Unhashing password and checking if it matches
+                u_id= user_info[0].user_id
+                return redirect(f'/{u_id}/{user_name}/dashboard')          #Redirecting to dashboard if password is correct
+            
+        #If password is incorrect redirect to login page
         return render_template('login.html', error= "Wrong password")
     
+# Function for backend validation of password  while user will register
 def validate(password):
     if(len(password)<=8):
         return "Password must be atleast 8 characters long"
-    count ,num,up=0,0,0
+    special_charater_count ,interger_count , upper_case=0,0,0
     special_charaters=['[','@','_','!','#','$','%','^','&','*','(',')','<','>','?','/','|','}','{','~',':',']','+','-',',']
     for i in password:
         if(i in special_charaters):
-            count+=1
+            special_charater_count+=1
         if(i.isdigit()):
-            num+=1
+            interger_count+=1
         if(i.isupper()):
-            up+=1
-    if(count==0):
+            upper_case+=1
+    if(special_charater_count==0):
         return "Password must contain atleast one special character"
-    if(num==0):
+    if(interger_count==0):
         return "Password must contain atleast one number"
-    if(up==0):
+    if(upper_case==0):
         return "Password must contain atleast one uppercase letter"
+    if(len(password)-special_charater_count-interger_count-upper_case<=0):
+        return "Password must contain atleast one lowercase letter"
     return "valid"
 
 #ROUTE: REGISTER
 @app.route('/register', methods= ["GET", "POST"] )
 def register():
     if request.method == "POST":
-        un, fn= request.form['u_name'], request.form['f_name']
-        ln, pw= request.form['l_name'], request.form['pswd']
-        if(validate(pw)=="valid"):
-            pw_hash= bcrypt.generate_password_hash(pw).decode('utf-8')
-            addUser= User(user_name=un, first_name=fn, last_name=ln, password=pw_hash)
-            db.session.add(addUser)
+        
+        # Getting details form form
+        user_name, first_name= request.form['u_name'], request.form['f_name']
+        last_name, user_password= request.form['l_name'], request.form['pswd']
+        
+        # Validating password
+        if(validate(user_password)=="valid"):
+            user_password_hashed= bcrypt.generate_password_hash(user_password).decode('utf-8')    #Hashing password
+            add_user= User(user_name=user_name, first_name=first_name, last_name=last_name, password=user_password_hashed)   #Adding user to database
+            db.session.add(add_user)
             db.session.commit()
             return redirect('/login')
-        return render_template('register.html', error= validate(pw))
+        
+        #If password is invalid redirect to register page
+        return render_template('register.html', error= validate(user_password))
+    
     if request.method == "GET":
        return render_template('register.html')
 
 #ROUTES: TRACKER CRUD
 #ROUTE: TRACKER READ
 @app.route('/<int:user_id>/<user_name>/dashboard')
-def dash(user_id, user_name):
-    tList = requests.get(BASE + str(user_id)+ "/trackers", {'tracker_type': 'Boolean', 'tracker_name': 'helping', 'description': 'counting days of helping '})
-    tDict= tList.json()
-    l= []
-    for r in tDict:
-        tid= r['tracker_id']
-        tid=str(tid)
-        tlog= requests.get(f"{BASE}{user_id}/{tid}/tracker_logs")
+def dashboardView(user_id, user_name):
+    
+    # Getting tracker data from database by api
+    tracker_list_request= requests.get(BASE + str(user_id)+ "/trackers")
+    tracker_list= tracker_list_request.json()
+    # print(tracker_list)
+    
+    # making list of trackers and getting the last log value for each tracker 
+    for tracker in tracker_list:
+        tlog= requests.get(f"{BASE}{user_id}/{str(tracker['tracker_id'])}/tracker_logs")   #Getting tracker logs
         tlogDict= tlog.json()
         if(len(tlogDict)>0):
-            for i in tlogDict:
-                l.append(i['tracker_timestamp'])
-    j=0
-    for i in tDict:
-        if(len(l)>j):
-            s=l[j].split(' ')
-            i['logs']= s[0]
-            j+=1
+            last_log=tlogDict[-1]['tracker_timestamp']
+            tracker['logs']=last_log.split('.')[0]
         else:
-            i['logs']= 'No logs found'
-    # print(tDict)
-    #return str(len(tDict))
-    return render_template('dashboard.html', tDict=tDict, user_name=user_name, user_id= user_id)
+            tracker['logs']='No logs found'               #If no logs found for a tracker, set it to 'No logs found'
+            
+    return render_template('dashboard.html', tDict=tracker_list, user_name=user_name, user_id= user_id)
 
 #ROUTE: TRACKER CREATE
 @app.route('/<int:user_id>/<user_name>/add_tracker', methods= ["GET","POST"])
-def addT(user_id, user_name):
+def addTracker(user_id, user_name):
+    
     if request.method == 'POST':
-        tn, td= request.form['tName'], request.form['tDesc']
-        tt= request.form['ttypes']
-        requests.post(BASE + str(user_id)+ "/trackers", {'tracker_type': tt, 'tracker_name': tn, 'description': td})
+        # Getting details from form
+        tracker_name, tracker_description= request.form['tName'], request.form['tDesc']
+        tracker_type= request.form['ttypes']
+        
+        # adding tracker to database by api
+        requests.post(BASE + str(user_id)+ "/trackers", {'tracker_type': tracker_type, 'tracker_name': tracker_name, 'description': tracker_description})
         return redirect(f'/{user_id}/{user_name}/dashboard')
+    
     elif request.method == 'GET':
         return render_template('add-tracker.html', user_name=user_name, user_id= user_id)
 
+
 #ROUTE: TRACKER UPDATE
 @app.route('/<int:user_id>/<user_name>/<int:tracker_id>/update_tracker' , methods= ["GET","POST"])
-def upT(user_id, user_name, tracker_id):
-    #return render_template('update1.html' , user_name=user_name, user_id= user_id, tracker_id= tracker_id)
+def updateTracker(user_id, user_name, tracker_id):
+    
     if request.method == 'POST':
-       tn, td= request.form['tName'], request.form['tDesc']
-       requests.put(BASE + str(user_id)+ "/tracker/" +str(tracker_id), {'tracker_name': tn, 'description': td })
+        # Getting details from form
+       tracker_name, tracker_details= request.form['tName'], request.form['tDesc']
+       
+       # updating tracker in database by api
+       requests.put(BASE + str(user_id)+ "/tracker/" +str(tracker_id), {'tracker_name': tracker_name, 'description': tracker_details })
        return redirect(f'/{user_id}/{user_name}/dashboard')
+   
     elif request.method == 'GET':
-        t=Tracker.query.filter_by(tracker_id=tracker_id).first()
-        trac_n= t.tracker_name
-        trac_d= t.description
-        trac_t= t.tracker_type
-        return render_template('update-tracker.html' , user_name=user_name, user_id= user_id, tracker_id= tracker_id, trac_n= trac_n, tracker_desc= trac_d, tracker_type= trac_t)
+        # Getting tracker data from database by api
+        tracker_list_request= requests.get(BASE + str(user_id)+ "/trackers")
+        tracker_list= tracker_list_request.json()
+        trac_name= ""
+        trac_desc= ""
+        trac_type= ""
+        for tracker in tracker_list:
+            if(tracker['tracker_id']==tracker_id):
+                trac_name= tracker['tracker_name']
+                trac_desc= tracker['description']
+                trac_type= tracker['tracker_type']
+                break
+        return render_template('update-tracker.html' , user_name=user_name, user_id= user_id, tracker_id= tracker_id, trac_n= trac_name, tracker_desc= trac_desc, tracker_type= trac_type)
 
 #ROUTE: TRACKER DELETE
 @app.route('/<int:user_id>/<user_name>/<int:tracker_id>/delete_tracker')
 def delT(user_id, user_name, tracker_id):
+    # deleting tracker from database by api
     requests.delete(BASE + str(user_id) +"/tracker/"+ str(tracker_id))
     return redirect(f'/{user_id}/{user_name}/dashboard')
 
