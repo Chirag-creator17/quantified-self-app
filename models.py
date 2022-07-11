@@ -41,7 +41,6 @@ class Tracker_Numerical(db.Model):
 class Tracker_multi_choice(db.Model):
     log_id=db.Column(db.Integer, primary_key=True, autoincrement=True)
     tracker_id=db.Column(db.Integer,db.ForeignKey('tracker.tracker_id'), nullable=False)
-    #user_id=db.Column(db.Integer,db.ForeignKey('user.user_id'), nullable=False, primary_key=True)
     tracker_timestamp=db.Column(db.DateTime,default=tz.localize(datetime.datetime.now()))
     tracker_value=db.Column(db.String(50),nullable=False)
     tracker_note=db.Column(db.String(100))

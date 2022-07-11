@@ -15,11 +15,11 @@ On log page you can see the log of all the trackers and also trendlines accordin
 - Install latest version of python
 - set up virtual environment by running the following command:
     ```
-    python -m venv venv
+    python -m venv env
     ```
 - Activate virtual environment by running the following command:
     ```python
-    source venv/bin/activate
+    .\env\Scripts\activate
     ```
 - Install dependencies by running the following command:
     ```python
@@ -31,7 +31,7 @@ On log page you can see the log of all the trackers and also trendlines accordin
     ```
 - Open the app in browser by running the following command:
     ```
-    http://localhost:5000
+    http://127.0.0.1:5000/
     ```
 
 
