@@ -169,66 +169,70 @@ def delT(user_id, user_name, tracker_id):
 def viewT(user_id, user_name, tracker_id, tracker_name):
     logL= requests.get(BASE + str(user_id)+"/" + str(tracker_id)+ "/tracker_logs")
     logListJson= logL.json()
-    response = requests.get(f"{BASE}{str(user_id)}/trackers")
-    td= response.json()
-    s=""
-    for r in td:
-        if r['tracker_id']== tracker_id:
-            tt= r['tracker_type']
-            s=tt
     tracker_values=[]
     tracker_log=[]
-    for i in logListJson:
-        ts= i['tracker_timestamp']
-        ts= ts.split(' ')
-        tracker_log.append(ts[0])
-        tracker_values.append(i['tracker_value'])
-    plt.clf()
-    if(s=="boolean"):
-        t,f=0,0
-        for i in tracker_values:
-            if(i=="True"):
-                t+=1
-            else:
-                f+=1
-        plt.pie([t,f],labels=["True","False"], shadow=True, startangle=90)
+    flag=1
+    tracker_type=""
+    if(len(logListJson)>0):
+        if(logListJson[0]['tracker_value']=="False" or logListJson[0]['tracker_value']=="True"):
+            tracker_type="boolean"
+        else:
+            tracker_type="numerical"
+        for i in logListJson:
+            ts= i['tracker_timestamp'].split(' ')
+            tracker_log.append(ts[0])
+            tracker_values.append(i['tracker_value'])
+        plt.clf()
+        if(tracker_type=="boolean"):
+            true_value,false_value=0,0
+            for i in tracker_values:
+                if(i=="True"):
+                    true_value+=1
+                else:
+                    false_value+=1
+            if(true_value+false_value==0):
+                flag=0
+            plt.pie([true_value,false_value],labels=["True","False"], shadow=True, startangle=90)
+            plt.legend(loc="lower right")
+        else:
+            plt.scatter(tracker_log, tracker_values)
+        plt.savefig('./static/hist.png')
+        
+        for i in range(len(logListJson)):
+            time_change= logListJson[i]['tracker_timestamp']
+            l=time_change.split('.')
+            logListJson[i]['tracker_timestamp']= l[0]
     else:
-        plt.scatter(tracker_log, tracker_values)
-    plt.savefig('./static/hist.png')
-    print(s,tracker_log,tracker_values)
-    for i in range(len(logListJson)):
-        time_change= logListJson[i]['tracker_timestamp']
-        l=time_change.split('.')
-        logListJson[i]['tracker_timestamp']= l[0]
+        flag=0
     tracker_name=tracker_name.capitalize()
-    return render_template('view-tracker.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name, logListJson= logListJson,tracker_type= s)
+    return render_template('view-tracker.html', user_id= user_id, user_name=user_name,flag=flag, tracker_id= tracker_id, tracker_name=tracker_name, logListJson= logListJson,tracker_type= tracker_type)
 
 #ADD A LOG, ROUTE
 @app.route('/<int:user_id>/<user_name>/<int:tracker_id>/<tracker_name>/add_log', methods= ["GET","POST"])
 def addLog(user_id, user_name, tracker_id, tracker_name):
-    #response = requests.post(BASE + user_id+"/" +tracker_id +"/tracker_logs", {'tracker_value':True, 'tracker_note':'new log'})
-    test=requests.get(f"{BASE}/{str(user_id)}/trackers")
-    test_json=test.json()
+    trackers=requests.get(f"{BASE}/{str(user_id)}/trackers")
+    tracker_json=trackers.json()
     tracker_type=''
-    for i in test_json:
+    for i in tracker_json:
         if(i['tracker_id']==tracker_id):
             tracker_type= i['tracker_type']
+            break
     tz = pytz.timezone('Asia/Kolkata')
-    tracker_time=tz.localize(datetime.datetime.now())
-    tr=tracker_time.strftime("%H:%M:%S")
+    tr=tz.localize(datetime.datetime.now())
+    tracker_time=tr.strftime("%H:%M:%S")
     if request.method == 'POST':
-        val, nts= request.form['value'], request.form['notes']
-        requests.post(BASE + str(user_id) +"/" +str(tracker_id)+ "/tracker_logs", {'tracker_value':val, 'tracker_note':nts})
+        tracker_value, tracker_note= request.form['value'], request.form['notes']
+        requests.post(BASE + str(user_id) +"/" +str(tracker_id)+ "/tracker_logs", {'tracker_value':tracker_value, 'tracker_note':tracker_note})
         return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
     elif request.method == 'GET':
-        return render_template('add-logs.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name,tracker_type=tracker_type,tracker_time=tr)
+        return render_template('add-logs.html', user_id= user_id, user_name=user_name, tracker_id= tracker_id, tracker_name=tracker_name,tracker_type=tracker_type,tracker_time=tracker_time)
 
 #UPDATE A LOG, ROUTE
 @app.route('/<int:user_id>/<user_name>/<int:tracker_id>/<tracker_name>/<int:log_id>/update_log' , methods= ["GET","POST"])
 def updateLog(user_id, user_name, tracker_id, log_id, tracker_name):
     if request.method == 'POST':
-       val, nts= request.form['value'], request.form['notes']
-       requests.put(f'{BASE}{user_id}/{tracker_id}/tracker_log/{log_id}', {'tracker_value':val, 'tracker_note':nts})
+       tracker_value, tracker_note= request.form['value'], request.form['notes']
+       requests.put(f'{BASE}{user_id}/{tracker_id}/tracker_log/{log_id}', {'tracker_value':tracker_value, 'tracker_note':tracker_note})
        return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
     elif request.method == 'GET':
         response = requests.get(f"{BASE}{user_id}/{tracker_id}/tracker_logs")
