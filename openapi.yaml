@@ -1,10 +1,7 @@
-#project openAPi
 
-openapi: 3.0.3
 info: 
   title: openAPi specification for project
-  version: '1.2'
-    
+  version: 1.0.0
 servers:
   - url: http://127.0.0.1:5000/
    
@@ -14,14 +11,13 @@ tags:
   - name: logs
     description: crud on logs
 
-    
 paths: 
   /Trackers: 
     summary: Tacker read create
     get:
       tags: 
         - Trackers
-      summary: get all trackers
+      summary: get all trackers of paticular userid
       responses:
         200:
           description: Success
@@ -41,7 +37,7 @@ paths:
     put:
       tags: 
         - Trackers
-      summary: update a tracker
+      summary: update tracker
       responses:
         200:
           description: Success
@@ -61,7 +57,7 @@ paths:
     get:
       tags: 
         - logs
-      summary: get all logs for a tracker
+      summary: get all logs for a particular tracker
       responses:
         200:
           description: Success

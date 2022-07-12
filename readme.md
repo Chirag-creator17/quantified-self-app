@@ -1,5 +1,5 @@
 # Quatified Self App
-By this app you can track your self. you can add or delete trackers of different types like numeric or boolean trackers. you can log different timestamp of different trackers.
+By this app you can track your activity.First you have to register youself and then login.Then you can add or delete trackers of different types like numeric or boolean trackers. you can log different timestamp of different trackers.
 On log page you can see the log of all the trackers and also trendlines according to the time and its values.
 
 ## Tech stack used
@@ -9,6 +9,7 @@ On log page you can see the log of all the trackers and also trendlines accordin
 - matplotlib
 - flask-sqlalchemy
 - flask-restful
+- flask-bcrypt
 - javascript
 
 ## Installation And Setup
