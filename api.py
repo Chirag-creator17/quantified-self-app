@@ -26,21 +26,12 @@ tracker_numerical_json = {
     'tracker_value': fields.Integer,
     'tracker_note': fields.String,
 }
-tracker_multichoice_json = {
-    'log_id': fields.Integer,
-    'tracker_id': fields.Integer,
-    'tracker_timestamp': fields.String,
-    'tracker_value': fields.String,
-    'tracker_note': fields.String,
-}
 type_dict = {
     'numerical': Tracker_Numerical,
-    'multiple_choice': Tracker_multi_choice,
     'boolean': Tracker_boolean
 }
 logs_json_dict = {
     'numerical': tracker_numerical_json,
-    'multiple_choice': tracker_multichoice_json,
     'boolean': tracker_boolean_json
 }
 
@@ -70,23 +61,15 @@ bool_args.add_argument("tracker_note", type=str,
                        help="note for the tracker log is required", required=True)
 
 # LOGS, NUMERICAL: POST, PUT: ARGS
-mum_args = reqparse.RequestParser()
-mum_args.add_argument("tracker_value", type=int,
-                            help="value of the tracker log is required", required=True)
-mum_args.add_argument(
+num_args = reqparse.RequestParser()
+num_args.add_argument("tracker_value", type=int,
+                      help="value of the tracker log is required", required=True)
+num_args.add_argument(
     "tracker_note", type=str, help="note for the tracker log is required", required=True)
 
-# LOGS, MULTICHOICE: POST, PUT: ARGS
-multi_args = reqparse.RequestParser()
-# logs_post_args.add_argument("tracker_timestamp")
-multi_args.add_argument("tracker_value", type=str,
-                        help="value of the tracker log is required", required=True)
-multi_args.add_argument("tracker_note", type=str,
-                        help="note for the tracker log is required", required=True)
 
 logType = {
-    Tracker_Numerical: mum_args,
-    Tracker_multi_choice: multi_args,
+    Tracker_Numerical: num_args,
     Tracker_boolean: bool_args
 }
 # API: TRACKERS: CRUD
@@ -99,16 +82,19 @@ class Trackers(Resource):
         allT = Tracker.query.filter_by(user_id=user_id).all()
         return allT
     # API: TRACKER: CREATE
+
     def post(self, user_id):
         args = tp_args.parse_args()
         new_tracker = Tracker(user_id=user_id, tracker_name=args['tracker_name'],
-                       tracker_type=args['tracker_type'], description=args['description'])
+                              tracker_type=args['tracker_type'], description=args['description'])
         db.session.add(new_tracker)
         db.session.commit()
-        
+
+
 api.add_resource(Trackers, "/<int:user_id>/trackers")
 
 # API: TRACKER: UPDATE
+
 
 class Tracker_manipulate(Resource):
     def put(self, user_id, tracker_id):
@@ -125,6 +111,7 @@ class Tracker_manipulate(Resource):
         db.session.commit()
         return 'sucessfully deleted'
 
+
 api.add_resource(Tracker_manipulate, "/<int:user_id>/tracker/<int:tracker_id>")
 
 
@@ -135,20 +122,21 @@ class Tracker_logs(Resource):
     def get(self, user_id, tracker_id):
         tracker_type = Tracker.query.filter_by(
             tracker_id=tracker_id).first().tracker_type
-        logClass = type_dict[tracker_type]
-        tLogs = logClass.query.filter_by(tracker_id=tracker_id).all()
-        return marshal(tLogs, logs_json_dict[tracker_type])
+        log_class = type_dict[tracker_type]
+        t_log = log_class.query.filter_by(tracker_id=tracker_id).all()
+        return marshal(t_log, logs_json_dict[tracker_type])
 
     def post(self, user_id, tracker_id):
         tracker_type = Tracker.query.filter_by(
             tracker_id=tracker_id).first().tracker_type
-        logClass = type_dict[tracker_type]
-        args = logType[logClass].parse_args()
-        newLog = logClass(
+        log_class = type_dict[tracker_type]
+        args = logType[log_class].parse_args()
+        new_log = log_class(
             tracker_id=tracker_id, tracker_value=args['tracker_value'], tracker_note=args['tracker_note'])
-        db.session.add(newLog)
+        db.session.add(new_log)
         db.session.commit()
         return 'new log added '
+
 
 api.add_resource(Tracker_logs, "/<int:user_id>/<int:tracker_id>/tracker_logs")
 
@@ -161,9 +149,9 @@ class log_manipulate(Resource):
     def put(self, user_id, tracker_id, log_id):
         tracker_type = Tracker.query.filter_by(
             tracker_id=tracker_id).first().tracker_type
-        logClass = type_dict[tracker_type]
-        args = logType[logClass].parse_args()
-        logUpdate = logClass.query.filter_by(tracker_id=tracker_id, log_id=log_id).update(
+        log_class = type_dict[tracker_type]
+        args = logType[log_class].parse_args()
+        log_update = log_class.query.filter_by(tracker_id=tracker_id, log_id=log_id).update(
             dict(tracker_value=args['tracker_value'], tracker_note=args['tracker_note']))
         db.session.commit()
         return 'tracker_log updated'
@@ -173,8 +161,8 @@ class log_manipulate(Resource):
     def delete(self, user_id, tracker_id, log_id):
         tracker_type = Tracker.query.filter_by(
             tracker_id=tracker_id).first().tracker_type
-        logClass = type_dict[tracker_type]
-        logClass.query.filter_by(log_id=log_id).delete()
+        log_class = type_dict[tracker_type]
+        log_class.query.filter_by(log_id=log_id).delete()
         db.session.commit()
         return 'tracker_log deleted'
 

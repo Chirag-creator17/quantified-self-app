@@ -9,21 +9,21 @@
   <body>
     <div class="container1">
       <h1>Register</h1>
-      <form action= '/register' method= 'POST'>
+      <form action="/register" method="POST">
         <div class="form-control">
-          <input type="text" name= "u_name" autocomplete="off" required />
+          <input type="text" name="u_name" autocomplete="off" required />
           <label>Username</label>
         </div>
         <div class="form-control">
-          <input type="name" name= "f_name" autocomplete="off" required />
+          <input type="name" name="f_name" autocomplete="off" required />
           <label>First Name</label>
         </div>
         <div class="form-control">
-          <input type="text" name= "l_name" autocomplete="off"/>
+          <input type="text" name="l_name" autocomplete="off" />
           <label>Last Name</label>
         </div>
         <div class="form-control">
-          <input type="password" name= "pswd" required />
+          <input type="password" name="pswd" required />
           <label>Password</label>
         </div>
 
@@ -31,7 +31,9 @@
       </form>
     </div>
     {% if error | length > 0 %}
-    <script>alert("{{error}}");</script>
+    <script>
+      alert("{{error}}");
+    </script>
     {% endif %}
     <script src="{{url_for('static',filename='login.js')}}"></script>
   </body>

@@ -55,13 +55,3 @@ class Tracker_boolean(db.Model):
         db.DateTime, default=tz.localize(datetime.datetime.now()))
     tracker_value = db.Column(db.String(10), nullable=False)
     tracker_note = db.Column(db.String(100))
-
-
-class Tracker_multi_choice(db.Model):
-    log_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    tracker_id = db.Column(db.Integer, db.ForeignKey(
-        'tracker.tracker_id'), nullable=False)
-    tracker_timestamp = db.Column(
-        db.DateTime, default=tz.localize(datetime.datetime.now()))
-    tracker_value = db.Column(db.String(50), nullable=False)
-    tracker_note = db.Column(db.String(100))

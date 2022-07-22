@@ -10,14 +10,21 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="{{url_for('static',filename='dashboard.css')}}" />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='dashboard.css')}}"
+    />
+    <link rel="stylesheet" href="{{url_for('static',filename='try.css')}}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <title>Dashboard</title>
   </head>
   <body>
     <!-- NAVIGATION BAR  -->
     <section class="navigation-bar">
       <nav class="navbar header">
-        <h1><a href="/{{user_id}}/{{user_name}}/dashboard">Hello {{user_name}}</a></h1>
+        <h1>
+          <a href="/{{user_id}}/{{user_name}}/dashboard">Hello {{user_name}}</a>
+        </h1>
         <div class="form-inline">
           <a href="/login">
             <button class="btn btn-outline-danger btn-lg">Logout</button>
@@ -28,65 +35,91 @@
 
     <!--  TRACKER LIST TABLE : TITLES  -->
     <section class="tracker-list">
-        <div class="container tracker-table">
+      <div class="container tracker-table">
         <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">Tracker Id</th>
-                <th scope="col">Tracker</th>
-                <th scope="col">Last Tracked</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
+          <thead>
+            <tr>
+              <th scope="col">Tracker Id</th>
+              <th scope="col">Tracker</th>
+              <th scope="col">Last Tracked</th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
 
-
-            <!-- TRACKER LIST TABLE : VALUES -->
-            <tbody>
-              {% for rowDict in tDict %}
-              <tr>
-                <th scope="row">{{rowDict['tracker_id']}}</th>
-                <td><a class="link" href="/{{user_id}}/{{user_name}}/{{rowDict['tracker_id']}}/{{rowDict['tracker_name']}}/tracker_logs">{{rowDict['tracker_name']}}</a></td>
-                <td>{{rowDict['logs']}}</td>
-                <td>
-                  <a href="/{{user_id}}/{{user_name}}/{{rowDict['tracker_id']}}/{{rowDict['tracker_name']}}/add_log">
-                  <button class="add">+</button></a>
-                </td>
-                <td>
-                    <div class="dropdown">
-                    <button class="btn dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                      Action
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                      <a href="/{{user_id}}/{{user_name}}/{{rowDict['tracker_id']}}/update_tracker">
-                      <button class="dropdown-item" type="button" href="#">Edit</button>
-                      </a>
-                      <a href="/{{user_id}}/{{user_name}}/{{rowDict['tracker_id']}}/delete_tracker">
-                      <button class="dropdown-item" type="button">Delete </button>
-                      </a>
-                    </div>
+          <!-- TRACKER LIST TABLE : VALUES -->
+          <tbody>
+            {% for rowDict in tDict %}
+            <tr>
+              <th scope="row">{{rowDict['tracker_id']}}</th>
+              <td>
+                <a
+                  class="link"
+                  href="/{{user_id}}/{{user_name}}/{{rowDict['tracker_id']}}/{{rowDict['tracker_name']}}/tracker_logs"
+                  >{{rowDict['tracker_name']}}</a
+                >
+              </td>
+              <td>{{rowDict['logs']}}</td>
+              <td>
+                <a
+                  href="/{{user_id}}/{{user_name}}/{{rowDict['tracker_id']}}/{{rowDict['tracker_name']}}/add_log"
+                >
+                  <button class="add">+</button></a
+                >
+              </td>
+              <td>
+                <div class="dropdown">
+                  <button
+                    class="btn dropdown-toggle"
+                    type="button"
+                    id="dropdownMenu2"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    Action
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                    <a
+                      href="/{{user_id}}/{{user_name}}/{{rowDict['tracker_id']}}/update_tracker"
+                    >
+                      <button class="dropdown-item" type="button" href="#">
+                        Edit
+                      </button>
+                    </a>
+                    <a
+                      href="/{{user_id}}/{{user_name}}/{{rowDict['tracker_id']}}/delete_tracker"
+                    >
+                      <button class="dropdown-item" type="button">
+                        Delete
+                      </button>
+                    </a>
                   </div>
-                </td>
-              </tr>
-              {% endfor %}
-
-            </tbody>
-          </table>
-        </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </section>
 
-
-<!--ADD TRACKER BUTTON -->
+    <!--ADD TRACKER BUTTON -->
     <section class="add-button">
-        <div class="container text-center">
+      <div class="container text-center">
         <a href="/{{user_id}}/{{user_name}}/add_tracker">
-        <button class="btn btn-outline-primary btn-lg" >Add New Tracker</button>
+          <button class="btn btn-outline-primary btn-lg">
+            Add New Tracker
+          </button>
         </a>
-    </div>
+      </div>
     </section>
-
-
-
+    <footer>
+      <div class="wave wave1"></div>
+      <div class="wave wave2"></div>
+      <div class="wave wave3"></div>
+      <div class="wave wave4"></div>
+    </footer>
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
       integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"

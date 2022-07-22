@@ -1,17 +1,15 @@
 @import url("https://fonts.googleapis.com/css?family=Muli&display=swap");
 .header {
   background-color: #000000;
-  /* background-color: rgb(105, 188, 216); */
   margin: auto -16px;
   padding: 16px 32px;
-  /* box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3); */
 }
-body{
+body {
   background: rgb(22, 40, 53);
-background-image: url("https://www.transparenttextures.com/patterns/ag-square.png");
+  background-image: url("https://www.transparenttextures.com/patterns/ag-square.png");
 }
 .link {
-  color:#fff;
+  color: #fff;
 }
 .header h1 {
   color: #fff;
@@ -19,7 +17,7 @@ background-image: url("https://www.transparenttextures.com/patterns/ag-square.pn
   font-family: "McLaren", cursive;
   font-weight: 200;
 }
-.header a{
+.header a {
   color: #fff;
   text-decoration: none;
 }
@@ -31,26 +29,25 @@ background-image: url("https://www.transparenttextures.com/patterns/ag-square.pn
   border: none;
   outline: none;
 }
-.table{
+.table {
   color: #fff;
 }
-label{
+label {
   color: #fff;
 }
-.btn{
+.btn {
   color: #fff;
 }
-.btn:hover{
+.btn:hover {
   color: #fff;
 }
-h1{
+h1 {
   color: #fff;
 }
 .tracker-table {
-  
   width: 100%;
   border-collapse: collapse;
-  font-family:'Courier New', Courier, monospace ;
+  font-family: "Courier New", Courier, monospace;
   border-spacing: 0;
   margin-top: 50px;
   font-size: 18px;
@@ -62,6 +59,6 @@ h1{
   font-family: "Muli", sans-serif;
   margin-top: 20px;
 }
-.form-group{
+.form-group {
   margin-top: 25px;
 }

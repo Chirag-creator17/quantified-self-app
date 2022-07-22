@@ -56,7 +56,7 @@ def validate(password):
     if(len(password) <= 8):
         return "Password must be atleast 8 characters long"
     special_charater_count, interger_count, upper_case = 0, 0, 0
-    special_charaters = ['[', '@', '_', '!', '#', '$', '%', '^', '&', '*','.'
+    special_charaters = ['[', '@', '_', '!', '#', '$', '%', '^', '&', '*', '.',';',
                          '(', ')', '<', '>', '?', '/', '|', '}', '{', '~', ':', ']', '+', '-', ',']
     for i in password:
         if(i in special_charaters):
