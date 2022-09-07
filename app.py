@@ -139,10 +139,9 @@ def addTracker(user_id, user_name):
         # Getting details from form
         tracker_name, tracker_description = request.form['tName'], request.form['tDesc']
         tracker_type = request.form['ttypes']
-
         # adding tracker to database by api
         requests.post(BASE + str(user_id) + "/trackers",
-                      {'tracker_type': tracker_type, 'tracker_name': tracker_name, 'description': tracker_description})
+                      json={'tracker_type': tracker_type, 'tracker_name': tracker_name, 'description': tracker_description})
         return redirect(f'/{user_id}/{user_name}/dashboard')
 
     elif request.method == 'GET':
@@ -159,7 +158,7 @@ def updateTracker(user_id, user_name, tracker_id):
 
         # updating tracker in database by api
         requests.put(BASE + str(user_id) + "/tracker/" + str(tracker_id),
-                     {'tracker_name': tracker_name, 'description': tracker_details})
+                     json={'tracker_name': tracker_name, 'description': tracker_details})
         return redirect(f'/{user_id}/{user_name}/dashboard')
 
     elif request.method == 'GET':
@@ -255,7 +254,7 @@ def addLog(user_id, user_name, tracker_id, tracker_name):
         tracker_value, tracker_note = request.form['value'], request.form['notes']
         # post data to api
         requests.post(BASE + str(user_id) + "/" + str(tracker_id) + "/tracker_logs",
-                      {'tracker_value': tracker_value, 'tracker_note': tracker_note})
+                      json={'tracker_value': tracker_value, 'tracker_note': tracker_note})
         return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
     elif request.method == 'GET':
         return render_template('add-logs.html', user_id=user_id, user_name=user_name, tracker_id=tracker_id, tracker_name=tracker_name, tracker_type=tracker_type, tracker_time=tracker_time)
@@ -269,7 +268,7 @@ def updateLog(user_id, user_name, tracker_id, log_id, tracker_name):
         # getting details from form
         tracker_value, tracker_note = request.form['value'], request.form['notes']
         requests.put(f'{BASE}{user_id}/{tracker_id}/tracker_log/{log_id}',
-                     {'tracker_value': tracker_value, 'tracker_note': tracker_note})
+                     json={'tracker_value': tracker_value, 'tracker_note': tracker_note})
         return redirect(f'/{user_id}/{user_name}/{tracker_id}/{tracker_name}/tracker_logs')
     elif request.method == 'GET':
         response = requests.get(f"{BASE}{user_id}/{tracker_id}/tracker_logs")
